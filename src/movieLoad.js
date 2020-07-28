@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const movies = require('../data.js');
+const movies = require('../other/data.js');
 const fs = require('fs');
 
 const connectionURL = process.env.MOVIE_DB_PATH;

@@ -1,0 +1,5 @@
+{
+  "restartable": true,
+  "legacyWatch": true,
+  "ext": "js,mjs,json,hbs,html"
+}

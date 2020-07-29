@@ -3,38 +3,42 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const { movieSchema } = require('./movies');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  email: {
-    unique: true,
-    type: String,
-    required: true,
-    trim: true,
-    lowercase: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 7,
-    trim: true,
-  },
-  favorites: {
-    type: movieSchema,
-  },
-
-  tokens: [
-    {
-      token: {
-        type: String,
-        require: true,
-      },
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-  ],
-});
+    email: {
+      unique: true,
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 7,
+      trim: true,
+    },
+    favorites: {
+      type: movieSchema,
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          require: true,
+        },
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
@@ -51,13 +55,13 @@ userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new Error({ error: 'Unable to log in' });
+    throw new Error('No user found');
   }
 
   const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch) {
-    throw new Error({ error: 'Unable to log in' });
+    throw new Error('Password did not match');
   }
 
   return user;

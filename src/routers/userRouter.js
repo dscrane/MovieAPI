@@ -8,7 +8,6 @@ const router = new express.Router();
 router.post('/users', async (req, res) => {
   console.log('[REQ]', req.body);
   const user = new User(req.body);
-  console.log(user);
 
   try {
     await user.save();
@@ -20,17 +19,30 @@ router.post('/users', async (req, res) => {
 });
 
 // Route to log a user in
-router.post(
-  '/login',
-  /* async */ (req, res) => {
+router.post('/login', async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    await user.generateAuthToken();
+
     res.redirect('/users/me');
+  } catch (e) {
+    console.log(e);
   }
-);
+});
 
 // Route to log a user out
-router.post('/users/logout', async (req, res) => {
+router.post('/logout', authenticate, async (req, res) => {
   try {
-  } catch (e) {}
+    req.user.tokens = [];
+
+    await req.user.save();
+    res.redirect('/');
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 // Route to a users profile

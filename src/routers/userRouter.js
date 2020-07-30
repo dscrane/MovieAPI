@@ -51,6 +51,7 @@ router.post('/logout', authenticate, async (req, res) => {
 // Route to a users profile
 router.get('/users/profile', authenticate, (req, res) => {
   console.log(req.user);
+
   res.render('profile', {
     username: req.user.name,
   });
@@ -72,7 +73,9 @@ router.delete('/users/me', async (req, res) => {
 router.get('/users/profile/favorites', authenticate, async (req, res) => {
   try {
     res.render('favorites');
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 // Route to update a users favorites list
@@ -85,6 +88,10 @@ router.patch('/users/me/favorites', async (req, res) => {
 router.delete('/users/me/favorites', async (req, res) => {
   try {
   } catch (e) {}
+});
+
+router.get('/redirect', async (req, res) => {
+  res.render('errorMessage');
 });
 
 module.exports = router;

@@ -1,10 +1,12 @@
 require('dotenv').config();
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const express = require('express');
+const hbs = require('hbs');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const hbs = require('hbs');
 const userRouter = require('./routers/userRouter');
 const movieRouter = require('./routers/movieRouter');
 const appRouter = require('./routers/appRouter');
@@ -31,6 +33,8 @@ app.use(morgan('combined'));
 
 // Set up helmet for additional site security
 app.use(helmet());
+app.use(cors());
+app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 

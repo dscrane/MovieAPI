@@ -1,13 +1,21 @@
-import axios from 'axios';
+// import axios from 'axios';
 
-const loginRequest = (username, password) => {
-  axios
-    .post('/login', {
-      username,
+const loginForm = document.querySelector('#login-form');
+
+console.log(loginForm);
+
+const loginRequest = (email, password) => {
+  return axios
+    .post('http://localhost:3000/login', {
+      email,
       password,
     })
-    .then(res => {
-      const accessToken = res.headers('Authentication').replace('Bearer ', '');
-      lo;
-    });
+    .then(res => console.log(res));
 };
+
+loginForm.addEventListener('submit', e => {
+  const email = e.target.elements.email.value;
+  const password = e.target.elements.password.value;
+  console.log(email, password);
+  loginRequest(email, password);
+});

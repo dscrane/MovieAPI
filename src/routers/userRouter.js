@@ -21,15 +21,18 @@ router.post('/users', async (req, res) => {
 // Route to log a user in
 router.post('/login', async (req, res) => {
   try {
+    console.log(req.body);
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
     );
-    await user.generateAuthToken();
+    const token = await user.generateAuthToken();
 
-    res.redirect('/users/me');
+    res.cookie('userAuth', token, { maxAge: 9000000, httpOnly: true });
+
+    res.redirect('/users/profile');
   } catch (e) {
-    console.log(e);
+    res.status(403).send();
   }
 });
 
@@ -46,8 +49,11 @@ router.post('/logout', authenticate, async (req, res) => {
 });
 
 // Route to a users profile
-router.get('/users/me', (req, res) => {
-  res.render('users');
+router.get('/users/profile', authenticate, (req, res) => {
+  console.log(req.user);
+  res.render('profile', {
+    username: req.user.name,
+  });
 });
 
 // Route to update a user profile
@@ -63,8 +69,9 @@ router.delete('/users/me', async (req, res) => {
 });
 
 // Route to a users favorites list
-router.get('/users/me/favorites', async (req, res) => {
+router.get('/users/profile/favorites', authenticate, async (req, res) => {
   try {
+    res.render('favorites');
   } catch (e) {}
 });
 

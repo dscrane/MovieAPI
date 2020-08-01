@@ -1,16 +1,7 @@
 <header class="header">
   <nav class="nav">
-    <div class="nav__container">
-      <button id="profile-cta" class="nav__button">Profile</button>
-    </div>
-    <div class="nav__container">
-      <button id="favorites-cta" class="nav__button">Favorites</button>
-    </div>
-    <div class="nav__container">
-      <button id="logout-cta" class="nav__button">Log Out</button>
-    </div>
-
-
-
+    {{#each buttons}}
+    {{>navButton button=.}}
+    {{/each}}
   </nav>
 </header>

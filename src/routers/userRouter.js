@@ -40,9 +40,11 @@ router.post('/login', async (req, res) => {
 router.post('/logout', authenticate, async (req, res) => {
   try {
     req.user.tokens = [];
-
     await req.user.save();
-    res.redirect('/');
+    req.logOut();
+    req.session.destroy(err => {
+      res.redirect('/');
+    });
   } catch (e) {
     console.log(e);
   }

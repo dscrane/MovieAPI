@@ -5,7 +5,7 @@ const router = new express.Router();
 router.get('/', (req, res) => {
   console.log('\x1b[31m Auth Token \x1b[0m', req.cookies.userAuth);
   if (req.cookies.userAuth === undefined) {
-    return res.render('home', { buttons: ['Register', 'Log In'] });
+    return res.render('home');
   }
 
   res.redirect('/users/profile');

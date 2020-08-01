@@ -41,10 +41,8 @@ router.post('/logout', authenticate, async (req, res) => {
   try {
     req.user.tokens = [];
     await req.user.save();
-    req.logOut();
-    req.session.destroy(err => {
-      res.redirect('/');
-    });
+    res.clearCookie('userAuth', { path: '/' });
+    res.redirect('/');
   } catch (e) {
     console.log(e);
   }

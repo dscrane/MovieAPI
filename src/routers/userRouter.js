@@ -6,7 +6,7 @@ const User = require('../models/user');
 const router = new express.Router();
 
 router.post('/users', async (req, res) => {
-  console.log('[REQ]', req.body);
+  console.log('\x1b[31m [REQ]: \x1b[0m', req.body);
   const user = new User(req.body);
 
   try {
@@ -59,14 +59,34 @@ router.get('/users/profile', authenticate, (req, res) => {
 
 // Route to update a user profile
 router.patch('/users/me', async (req, res) => {
+  const updates = Object.keys(req.body);
+  const validAlterations = ['name', 'email', 'password'];
+
+  const validUpdate = updates.every(update => {
+    return validAlterations.includes(update);
+  });
+
+  if (!validUpdate) {
+    res.status(400).send({ error: 'One or more of the updates is invalid' });
+  }
+
   try {
-  } catch (e) {}
+    updates.forEach(update => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.send(req.user);
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
 // Route to delete a user profile
-router.delete('/users/me', async (req, res) => {
+router.delete('/users/me', authenticate, async (req, res) => {
   try {
-  } catch (e) {}
+    req.user.remove();
+    res.send(req.user);
+  } catch (e) {
+    res.status(500).send();
+  }
 });
 
 // Route to a users favorites list
@@ -85,9 +105,14 @@ router.patch('/users/me/favorites', async (req, res) => {
 });
 
 // Route to delete a users favorites list
-router.delete('/users/me/favorites', async (req, res) => {
+router.delete('/users/me/favorites', authenticate, async (req, res) => {
   try {
-  } catch (e) {}
+    req.user.favorites = [];
+    await req.user.save();
+    res.send(req.user);
+  } catch (e) {
+    res.status(500).send();
+  }
 });
 
 router.get('/redirect', async (req, res) => {

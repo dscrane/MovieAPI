@@ -1,8 +1,10 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const movies = require('../other/data.js');
-const fs = require('fs');
 
-const connectionURL = process.env.MOVIE_DB_PATH;
+const connectionURL =
+  'mongodb+srv://dsc:dagster@cluster0.m8klv.mongodb.net/movieapp?authSource=admin&replicaSet=atlas-srv6pq-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass%20Community&retryWrites=true&ssl=true';
+console.log(connectionURL);
 
 mongoose.connect(connectionURL, {
   useNewUrlParser: true,

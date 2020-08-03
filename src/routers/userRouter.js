@@ -1,20 +1,22 @@
 const express = require('express');
 const authenticate = require('../middlewares/authenticate');
 const User = require('../models/user');
+const { Movie } = require('../models/movies');
 
 // Define a new router
 const router = new express.Router();
 
+// Route to create a new user
 router.post('/users', async (req, res) => {
-  console.log('\x1b[31m [REQ]: \x1b[0m', req.body);
   const user = new User(req.body);
 
   try {
     await user.save();
     await user.generateAuthToken();
-    res.redirect('/users/me');
+
+    res.send(user);
   } catch (e) {
-    console.log(e);
+    res.status(400).send(e);
   }
 });
 
@@ -28,11 +30,9 @@ router.post('/login', async (req, res) => {
     );
     const token = await user.generateAuthToken();
 
-    res.cookie('userAuth', token, { maxAge: 9000000, httpOnly: true });
-
-    res.redirect('/users/profile');
+    res.send({ user, token });
   } catch (e) {
-    res.status(403).send();
+    res.status(404).send();
   }
 });
 
@@ -41,24 +41,20 @@ router.post('/logout', authenticate, async (req, res) => {
   try {
     req.user.tokens = [];
     await req.user.save();
-    res.clearCookie('userAuth', { path: '/' });
-    res.redirect('/');
+
+    res.send();
   } catch (e) {
-    console.log(e);
+    res.status(500).send();
   }
 });
 
 // Route to a users profile
 router.get('/users/profile', authenticate, (req, res) => {
-  console.log(req.user);
-
-  res.render('profile', {
-    username: req.user.name,
-  });
+  res.send(req.user);
 });
 
 // Route to update a user profile
-router.patch('/users/me', async (req, res) => {
+router.patch('/users/profile', authenticate, async (req, res) => {
   const updates = Object.keys(req.body);
   const validAlterations = ['name', 'email', 'password'];
 
@@ -75,12 +71,12 @@ router.patch('/users/me', async (req, res) => {
     await req.user.save();
     res.send(req.user);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send({ error: e });
   }
 });
 
 // Route to delete a user profile
-router.delete('/users/me', authenticate, async (req, res) => {
+router.delete('/users/profile', authenticate, async (req, res) => {
   try {
     req.user.remove();
     res.send(req.user);
@@ -92,20 +88,28 @@ router.delete('/users/me', authenticate, async (req, res) => {
 // Route to a users favorites list
 router.get('/users/profile/favorites', authenticate, async (req, res) => {
   try {
-    res.render('favorites');
+    res.send(req.user.favorites);
   } catch (e) {
-    console.log(e);
+    res.status(500).send();
   }
 });
 
 // Route to update a users favorites list
-router.patch('/users/me/favorites', async (req, res) => {
+router.patch('/users/profile/favorites', authenticate, async (req, res) => {
   try {
-  } catch (e) {}
+    const favoriteMovie = await Movie.findById({ _id: req.body.movie });
+
+    req.user.favorites.push(favoriteMovie);
+
+    await req.user.save();
+    res.send(req.user.favorites);
+  } catch (e) {
+    res.status(500).send();
+  }
 });
 
 // Route to delete a users favorites list
-router.delete('/users/me/favorites', authenticate, async (req, res) => {
+router.delete('/users/profile/favorites', authenticate, async (req, res) => {
   try {
     req.user.favorites = [];
     await req.user.save();
@@ -113,10 +117,6 @@ router.delete('/users/me/favorites', authenticate, async (req, res) => {
   } catch (e) {
     res.status(500).send();
   }
-});
-
-router.get('/redirect', async (req, res) => {
-  res.render('errorMessage');
 });
 
 module.exports = router;

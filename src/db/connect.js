@@ -1,7 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const connectionURL = process.env.USER_DB_PATH;
+const connectionURL = process.env.MOVIEAPP_DB_PATH;
 
 mongoose.connect(connectionURL, {
   useNewUrlParser: true,

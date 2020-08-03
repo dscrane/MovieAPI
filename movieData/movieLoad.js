@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const movies = require('../other/data.js');
 const fs = require('fs');
 
-const connectionURL = process.env.MOVIE_DB_PATH;
+const connectionURL = 'mongodb://127.0.0.1:27017/movieapp_test';
 
 mongoose.connect(connectionURL, {
   useNewUrlParser: true,
@@ -45,6 +45,17 @@ const movieSchema = mongoose.Schema({
 });
 const Movie = mongoose.model('Movie', movieSchema);
 
+let num = movies.length;
+
+for (let i = num; i > num - 10; i--) {
+  db.once('open', async () => {
+    const movieToAdd = new Movie(movies[i]);
+    await movieToAdd.save();
+  });
+}
+
+/*
+
 const lists = genres.map(genre => {
   let genreList;
   if (genre === 'Other') {
@@ -60,6 +71,7 @@ const lists = genres.map(genre => {
   return genreList;
 });
 
+
 lists.forEach((list, i) => {
   db.once('open', () => {
     console.log('Connection was successful');
@@ -72,7 +84,7 @@ lists.forEach((list, i) => {
     });
   });
   console.log(`${genres[i]} list added to the db`);
-});
+}); */
 
 /* 
   const genreListJSON = JSON.stringify(genreList);

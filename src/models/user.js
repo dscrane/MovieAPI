@@ -23,11 +23,7 @@ const userSchema = new mongoose.Schema(
       minlength: 7,
       trim: true,
     },
-    favorites: [
-      {
-        movie: movieSchema,
-      },
-    ],
+    favorites: [movieSchema],
     tokens: [
       {
         token: {

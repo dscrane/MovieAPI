@@ -15,3 +15,5 @@ app.use(express.json());
 app.use(appRouter);
 app.use(userRouter);
 app.use(movieRouter);
+
+module.exports = app;

@@ -12,9 +12,9 @@ router.post('/users', async (req, res) => {
 
   try {
     await user.save();
-    await user.generateAuthToken();
+    const token = await user.generateAuthToken();
 
-    res.send(user);
+    res.status(201).send({ user, token });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -23,7 +23,6 @@ router.post('/users', async (req, res) => {
 // Route to log a user in
 router.post('/login', async (req, res) => {
   try {
-    console.log(req.body);
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
@@ -78,7 +77,7 @@ router.patch('/users/profile', authenticate, async (req, res) => {
 // Route to delete a user profile
 router.delete('/users/profile', authenticate, async (req, res) => {
   try {
-    req.user.remove();
+    await req.user.remove();
     res.send(req.user);
   } catch (e) {
     res.status(500).send();
@@ -102,7 +101,7 @@ router.patch('/users/profile/favorites', authenticate, async (req, res) => {
     req.user.favorites.push(favoriteMovie);
 
     await req.user.save();
-    res.send(req.user.favorites);
+    res.send(req.user);
   } catch (e) {
     res.status(500).send();
   }

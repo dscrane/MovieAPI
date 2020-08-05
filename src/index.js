@@ -29,7 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Have express parse incoming json
 app.use(express.json());
 // Connecting the routers to the express app
-app.use(appRouter);
+// app.use(appRouter);
 app.use(userRouter);
 app.use(movieRouter);
 

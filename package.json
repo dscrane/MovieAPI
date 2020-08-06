@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "load": "run(){ node ./movieData/movieLoad.js --db $@; }; run"
   },
   "jest": {
     "testEnvironment": "node"
